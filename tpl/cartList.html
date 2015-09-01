@@ -1,0 +1,35 @@
+<header class="xs-header">
+    <a class="xs-header-back" goback="/index"><span></span>返回</a>
+
+    <div class="xs-header-title flex">
+        <span class="header-rst-name">购物车</span>
+    </div>
+</header>
+<section>
+    <ul class="ui-block">
+        <li class="cart-dish" ng-repeat="item in list">
+            <div class="cart-detail" ng-click="showCtrls = !showCtrls">
+                <span class="cart-dish-name" ng-bind="item.name"></span>
+                <span class="cart-dish-quantity" ng-bind="item.quantity"></span>
+                <span class="cart-dish-cost" ng-bind="item.price*item.quantity"></span>
+            </div>
+            <div class="cart-control" ng-class="{'ui-show':showCtrls}">
+                <div class="cart-control-remove" ng-click="removeFood(item)">清空全部</div>
+                <div class="cart-control-edit">
+                    <span class="decrease" ng-click="decrease(item)">-</span>
+                    <span class="increase" ng-click="add(item)">+</span>
+                </div>
+            </div>
+        </li>
+    </ul>
+</section>
+<footer class="cart-footer">
+    <p class="cart-summary">
+        <span ng-bind="totalAmount()"></span>&nbsp;份美食
+                <span class="ui-rmb total-cost" ng-bind="totalPrice()">
+                </span>
+    </p>
+    <a ng-href="#/order">
+        <button class="ui-btn btn-confirm">去结算</button>
+    </a>
+</footer>

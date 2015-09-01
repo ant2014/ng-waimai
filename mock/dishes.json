@@ -1,0 +1,58 @@
+{
+  "ret": 0,
+  "data": {
+    "dishesType": {
+      "3": "配菜饮料",
+      "2": "商务套餐",
+      "1": "盖烧饭",
+      "0": "炒菜"
+    },
+    "dishes": [
+      {
+        "picture": "images/mlkww70_70.png",
+        "id": 3,
+        "price": 14,
+        "desc": " ",
+        "sales": 7,
+        "name": "乱炖",
+        "recommand": 0,
+        "typeId": 3,
+        "discount": 1
+      },
+      {
+        "picture": "images/mlkww70_70.png",
+        "id": 2,
+        "price": 12,
+        "desc": " ",
+        "sales": 5,
+        "name": "炒鸡蛋",
+        "recommand": 2,
+        "typeId": 2,
+        "discount": 1
+      },
+      {
+        "picture": "images/mlkww70_70.png",
+        "id": 1,
+        "price": 13,
+        "desc": " ",
+        "sales": 3,
+        "name": "好菜",
+        "recommand": 1,
+        "typeId": 1,
+        "discount": 1
+      },
+      {
+        "picture": "images/mlkww70_70.png",
+        "id": 5,
+        "price": 14,
+        "desc": " ",
+        "sales": 7,
+        "name": "大红腰",
+        "recommand": 0,
+        "typeId": 0,
+        "discount": 1
+      }
+    ]
+  },
+  "msg": "获取全部菜品成功"
+}

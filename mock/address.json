@@ -1,0 +1,42 @@
+{
+  "ret": 0,
+  "data": [
+    {
+      "id": 1,
+      "address": "addr1",
+      "tel": "13111111111",
+      "name": "配送点1",
+      "map": "",
+      "restaurant": "夕食餐厅",
+      "restaurantId": 1
+    },
+    {
+      "id": 2,
+      "address": "addr2",
+      "tel": "13122222222",
+      "name": "配送点2",
+      "map": "",
+      "restaurant": "夕食餐厅",
+      "restaurantId": 1
+    },
+    {
+      "id": 3,
+      "address": "addr3",
+      "tel": "13133333333",
+      "name": "配送点3",
+      "map": "",
+      "restaurant": "朝花餐厅",
+      "restaurantId": 2
+    },
+    {
+      "id": 4,
+      "address": "addr4",
+      "tel": "13144444444",
+      "name": "配送点4",
+      "map": "",
+      "restaurant": "朝花餐厅",
+      "restaurantId": 2
+    }
+  ],
+  "msg": "获取取餐点列表成功"
+}

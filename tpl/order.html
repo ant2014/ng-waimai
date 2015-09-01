@@ -1,0 +1,119 @@
+<header class="xs-header">
+    <a class="xs-header-back" ng-href="#/cart"><span></span>返回</a>
+
+    <div class="xs-header-title flex">
+        <span class="header-rst-name">配餐信息</span>
+    </div>
+</header>
+<section class='ui-padding-block delivery-block' ng-click="checkTel()">
+    <div>
+        <p class="clear-margin" ng-if="tel">
+            联系方式：<span ng-bind="tel"></span>
+        </p>
+
+        <p class="class-margin" ng-if="!tel">填写联系方式</p>
+    </div>
+    <span class='ui-enter ui-gt'>&gt;</span>
+</section>
+<section class='ui-padding-block delivery-block' ng-click="showAddr = !showAddr">
+    <div>
+        <p class="clear-margin" ng-if="crtAddress">
+            <span ng-show="crtAddress.name" ng-bind="crtAddress.name"></span>
+            <span ng-bind="crtAddress.address"></span>
+        </p>
+
+        <p class="class-margin" ng-if="!crtAddress">选择取餐地址</p>
+    </div>
+    <span class='ui-enter ui-gt'>&gt;</span>
+</section>
+<section class="ui-block delivery-dish" ng-init="{ payStatus:!0 }">
+    <div class='delivery-dish-detail delivery-block'>
+        <span class="delivery-pay-name">支付方式</span>
+    </div>
+    <div class="delivery-dish-detail delivery-block payonline-item">
+        <span class="delivery-pay-name">微信支付1</span>
+        <span class="payonline-btn" ng-click="changePayStyle()" ng-class="{ 'pay-selected': wxPay }">√</span>
+    </div>
+    <div class="delivery-dish-detail delivery-block payonline-item">
+        <span class="delivery-pay-name">餐到付款2{{wxPay}}</span>
+        <span class="payonline-btn" ng-click="changePayStyle()" ng-class="{ 'pay-selected': facePay }">√</span>
+    </div>
+    <!--<div class="delivery-dish-detail delivery-block payonline-item">
+        <div>
+            <span>在线支付</span>
+
+            <div class="payonline-banner">支持微信支付</div>
+        </div>
+        <span class="payonline-btn" ng-click="payStatus=!payStatus" ng-class="{ 'pay-selected':payStatus }">√</span>
+    </div>-->
+</section>
+<div class="slide-block" ng-class="{ 'ui-slide-in':showAddr }">
+    <header class="xs-header">
+        <a class="xs-header-back" ng-click="showAddr = !showAddr"><span></span>返回</a>
+
+        <div class="xs-header-title flex">
+            <span class="header-rst-name">选择地址</span>
+        </div>
+    </header>
+    <div>
+        <ul class="delivery-list">
+            <li class="dlist-item" ng-repeat="addrItem in address">
+                <div class="dlist-item-content" ng-click="selectAddr(addrItem)">
+                    <p class="clear-margin" ng-bind="addrItem.name"></p>
+
+                    <p class="clear-margin" ng-bind="addrItem.address"></p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<section class="ui-block delivery-dish">
+    <div class="delivery-block">
+        <h3 class="dblock-title">送达时间</h3>
+
+        <div class="dblock-content non-selectable">尽快送出</div>
+    </div>
+    <div class="delivery-block" ng-click="showNote = !showNote">
+        <h3 class="dblock-title">备注</h3>
+
+        <div class="dblock-content non-selectable">
+            <span class="dblock-content-text" ng-bind="note ? note : '无备注'">无备注</span>
+            <span>&gt;</span>
+        </div>
+    </div>
+</section>
+<section class="slide-block" ng-class="{ 'ui-slide-in': showNote }">
+    <header class="xs-header">
+        <a class="xs-header-back" ng-click="showNote = !showNote"><span></span>返回</a>
+
+        <div class="xs-header-title flex">
+            <span class="header-rst-name">添加备注</span>
+        </div>
+    </header>
+    <div class="ui-padding-block input-group">
+        <textarea class="ui-textarea" placeholder="请填写备注" ng-model="note"></textarea>
+
+        <div add-note class="delivery-quick-note">
+            <span class="dnote" ng-click="noteClick($event)">不吃辣</span>
+            <span class="dnote" ng-click="noteClick($event)">辣一点</span>
+            <span class="dnote" ng-click="noteClick($event)">不要一次性筷子</span>
+            <span class="dnote" ng-click="noteClick($event)">多加米</span>
+        </div>
+    </div>
+    <footer class="cart-footer">
+        <div class="ui-btn btn-confirm" ng-click="showNote = !showNote;">新增备注</div>
+    </footer>
+</section>
+<section class="ui-block delivery-dish delivery-dish-muted">
+    <div class="delivery-block">
+        <h3 class="dblock-title">优惠券</h3>
+
+        <div class="dblock-block-text">暂不支持优惠券</div>
+    </div>
+</section>
+<footer class="cart-footer cart-footer-laststep" ng-controller="cartCtrl">
+    <div class="cart-rmb">
+        <span class="ui-rmb cart-dish-cartprice" ng-bind="totalPrice()">43</span>
+    </div>
+    <button class="ui-btn btn-confirm" ng-click="checkCart()">确认下单</button>
+</footer>

@@ -1,0 +1,59 @@
+<header class="xs-header">
+    <a class="xs-header-back" goback="/index"><span></span>返回</a>
+
+    <div class="xs-header-title flex">
+        <span class="header-rst-name">一盐堂</span>
+    </div>
+</header>
+<div class="xs-main-content" restaurant-viewport>
+    <section class="xs-rst-menu" skate-shoes="dishType">
+        <ul>
+            <menu-nav class="xs-rst-menu-item" ng-repeat="type in dishType"
+                      ng-class="{active:$index === currentIndex}"
+                      ng-click="selectMenu($index,type)">
+                    <span class="xs-rst-menu-tip ng-hide" menu-amount menu="type" ng-show="amount"
+                          ng-bind="amount">0</span>
+                <span>{{type}}</span>
+            </menu-nav>
+        </ul>
+    </section>
+    <section class="xs-rst-dish-list" skate-shoes="dishes">
+        <section>
+            <menu-list>
+                <div class="xs-dish-container" ng-repeat="dish in dishes">
+                    <img ng-if="dish.picture&&(dish.picture != '/')" ng-src="{{dish.picture}}" width="70" height="70">
+
+                    <div class="xs-dish-body">
+                        <p class="xs-dish-name" ng-bind="dish.name"></p>
+
+                        <p class="xs-dish-description" ng-bind="dish.desc"></p>
+
+                        <div class="xs-dish-content">
+                            月售<span ng-bind="dish.sales"></span>份
+                        </div>
+                        <div class="xs-dish-footer">
+                            <span class="xs-dish-price" ng-bind="dish.price | currency : '¥'"></span>
+
+                            <div class="xs-dish-control">{{JSON.parse(cart.list)}}
+                            <span class="btn xs-dish-decrease ng-hide" cart-decrease ng-click="decrease()"
+                                  ng-hide="!cart.list[dish.id].quantity"></span>
+                                <span class="xs-dish-count" ng-bind="cart.list[dish.id].quantity||''"></span>
+                                <span class="btn xs-dish-add" cart-add ng-click="add(dish)"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </menu-list>
+        </section>
+    </section>
+</div>
+<a class="xs-menu-cart" href="javascript:void(0);" ng-controller="cartCtrl">
+    <div class="xs-menu-cart-summary">
+        <span class="cart-bg"></span>
+        <span class="cart-count" ng-bind="totalAmount()||0">2份</span>
+        <span class="cart-price" ng-bind="totalPrice()||0">122</span>
+    </div>
+    <div class="xs-menu-checkout" ng-click="checkStatus()">
+        确认美食
+    </div>
+</a>

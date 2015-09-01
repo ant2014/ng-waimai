@@ -1,0 +1,50 @@
+<header class="xs-header">
+    <a class="xs-header-back" goback="#/order" ng-if="false"><span></span>返回</a>
+
+    <div class="xs-header-title flex">
+        <span class="header-rst-name">订单详情{{wxPay}}</span>
+    </div>
+</header>
+<div class="trade-order order-status">
+    <div class="torder-status-now">
+        <p ng-bind="'订单状态：'+status.title"></p>
+
+        <p class="torder-status-tip" ng-bind="status.description"></p>
+    </div>
+    <div class="trade-btn-block" ng-if="!wxPay">
+        <a class="ui-btn ui-main-btn" ng-href="#/index.html">继续点餐</a>
+    </div>
+    <div class="trade-btn-block" ng-if="wxPay">
+        <a class="ui-btn ui-main-btn" ng-click="toPay()">去支付</a>
+    </div>
+</div>
+<section class="trade-block">
+    <h3 class="tblock-title">
+        合计
+        <span class="tblock-title-helper">
+        <span class="ui-multiple" ng-bind="foodQuantity()"></span>
+        <strong class="ui-rmb torder-cost" ng-bind="order.total"></strong>
+        </span>
+    </h3>
+
+    <div class="trade-bill">
+        <ul class="tbill-list">
+            <li class="tbill-list-item torder-dish" ng-repeat="food in order.dishes">
+                <span class="tdish-name" ng-bind="food.name"></span>
+                <span class="ui-multiple tdish-quantity" ng-bind="food.count"></span>
+                <span class="ui-rmb tdish-cost" ng-bind="food.count * food.price"></span>
+            </li>
+        </ul>
+    </div>
+</section>
+<section class="trade-block btn-placeholer">
+    <h3 class="tblock-title">订单信息</h3>
+    <ul class="tblock-list">
+        <li class="tblock-list-item" ng-bind="'订单号：' + order.orderId"></li>
+        <li class="tblock-list-item" ng-bind="'联系电话：' + order.tel"></li>
+        <li class="tblock-list-item" ng-bind="'取餐点：' + order.distribution"></li>
+        <li class="tblock-list-item" ng-bind="'支付方式：' + (order.orderType === 1 ? '在线支付' : '餐到付款')"></li>
+        <li class="tblock-list-item" ng-bind="'下单时间：' + (order.createTime | date: 'yyyy-MM-dd HH:mm')"></li>
+        <li class="tblock-list-item" ng-bind="'备注：' + order.remark">123</li>
+    </ul>
+</section>

@@ -1,0 +1,68 @@
+html {
+    min-height: 100%;
+    font-family: sans-serif;
+}
+
+.body-white {
+    background: #fff;
+    height: 100%;
+}
+
+.body-white > body {
+    background: #fff;
+    height: 100%;
+    color: #666;
+    font-size: 14px;
+}
+
+body {
+    min-width: 20em;
+    width: 100%;
+    min-height: 100%;
+    color: #666;
+    font: 100%/1.5 "Helvetica Neue", "Microsoft Yahei", sans-serif;
+}
+
+body, html, h1, h2, h3, h4, p, ul, ol, li, dl, dt, dd, form, div, a {
+    padding: 0;
+    margin: 0;
+}
+
+h1,h2,h3,h4,h5,h6,p{
+    margin:0 0 0.6em;
+}
+
+form, input, select, button {
+    font-family: "Helvetica Neue", "Microsoft YaHei", 'Hiragino Sans GB', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif, FreeSans;
+    color: #666;
+}
+
+select {
+    padding: 5px 8px;
+    background: #fff;
+    border: 1px solid #aaa;
+    height: 30px;
+    border-radius: 4px;
+}
+
+input {
+    -webkit-appearance: none;
+    padding: 5px 4px;
+}
+
+a:link, a:visited {
+    text-decoration: none;
+    color: #666;
+}
+
+a:hover {
+    color: #666;
+}
+
+i, em {
+    font-style: normal;
+}
+
+li {
+    list-style-type: none
+}

@@ -1,0 +1,49 @@
+<header class="xs-header">
+    <a class="xs-header-back" goback="#/order" ng-if="false"><span></span>返回</a>
+
+    <div class="xs-header-title flex">
+        <span class="header-rst-name">会员中心</span>
+    </div>
+</header>
+<section class='ui-padding-block delivery-block' ng-click="checkTel()">
+    <div>
+        <p class="clear-margin" ng-if="tel">
+            绑定手机：<span ng-bind="tel"></span>
+        </p>
+
+        <p class="class-margin" ng-if="!tel">请绑定手机</p>
+    </div>
+    <span class='ui-enter ui-gt'>&gt;</span>
+</section>
+<section class='ui-padding-block delivery-block' ng-click="showAddr = !showAddr">
+    <div>
+        <p class="clear-margin" ng-if="crtAddress">
+            <span>默认取餐点：</span><br/>
+            <span ng-show="crtAddress.name" ng-bind="crtAddress.name"></span><br/>
+            <span ng-bind="crtAddress.address"></span>
+        </p>
+
+        <p class="class-margin" ng-if="!crtAddress">请设置默认取餐点</p>
+    </div>
+    <span class='ui-enter ui-gt'>&gt;</span>
+</section>
+<div class="slide-block" ng-class="{ 'ui-slide-in':showAddr }">
+    <header class="xs-header">
+        <a class="xs-header-back" ng-click="showAddr = !showAddr"><span></span>返回</a>
+
+        <div class="xs-header-title flex">
+            <span class="header-rst-name">选择地址</span>
+        </div>
+    </header>
+    <div>
+        <ul class="delivery-list">
+            <li class="dlist-item" ng-repeat="addrItem in address">
+                <div class="dlist-item-content" ng-click="selectAddr(addrItem)">
+                    <p class="clear-margin" ng-bind="addrItem.name"></p>
+
+                    <p class="clear-margin" ng-bind="addrItem.address"></p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

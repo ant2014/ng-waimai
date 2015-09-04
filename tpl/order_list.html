@@ -5,7 +5,7 @@
         <span class="header-rst-name">订单列表</span>
     </div>
 </header>
-<div class="ui-center-container" ng-if="!hasRecord">
+<div class="ui-center-container" ng-if="hasRecord">
     <h2 class="ui-center-block-title">
         还未下过单
     </h2>
@@ -14,7 +14,11 @@
         快去体验一下吧
     </p>
 </div>
-<div ng-if="hasRecord" class="trade-order-content">
+<div ng-if="!hasRecord" class="trade-order-content">
+    <section style="width:100%;height:40px;position:absolute;border-bottom: 1px solid #ddd;background: #f7f7f7;text-align:center;" skate-shoes="dishType">
+       <button style="margin-top:5px;width:100px;height:30px;background-color:#fff;border-radius:8px 0px 0px 8px;" ng-click="tabs[0].active = true">当前订单</button><button style="margin-top:5px;width:100px;height:30px;background-color:#fff;border-radius:0px 8px 8px 0px;" ng-click="tabs[0].active = true">历史订单</button>
+    </section>
+
     <a class="trade-order" ng-repeat="order in orders" ng-href="#/detail/{{order.orderId}}">
         <div class="torder-status">
             <span ng-bind="order.status_title"></span>

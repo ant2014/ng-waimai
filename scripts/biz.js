@@ -11,6 +11,9 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
         if (location.href.indexOf("list.html") !== -1) {
             $window.location.href = "#/list";
         }
+        if (location.href.indexOf("member.html") !== -1) {
+            $window.location.href = "#/member";
+        }
     }])
 
     .directive('skateShoes', ['$timeout', function (timeout) {
@@ -87,6 +90,7 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
             }
             return count;
         };
+        var allOrderList;
         var timeer;
         var init = function () {
             if (user.user.id) {
@@ -112,6 +116,7 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
                         var item = res.data[i];
                         item.status_title = orderStatusEnum[item.status];
                     }
+                    allOrderList = item;
                 } else {
                     alert("获取订单信息失败：" + res.msg);
                 }
@@ -122,6 +127,57 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
         };
 
         timeer = $timeout(init, 100);
+    }])
+
+    .controller("memberCtrl", ['$scope', '$rootScope', '$location', 'Cart', 'userFactory', "address", "$window",'$http', function (scope, rootScope, $location, Cart, User, address, $window, $http) {
+        address.save({}, function (addrData) {
+            //获得用户的取餐点信息
+            var address = scope.address = addrData.data;
+            //alert("address= " + JSON.stringify(address));
+            //alert("user =" + JSON.stringify(User));
+            //alert("1-User.getProp(\"distributeId\") = " + User.getProp("distributeId"));
+            if (User.getProp("distributionId")) {
+                address.forEach(function (item, index, array) {
+                    if (item.id == User.getProp("distributionId")) {
+                        scope.crtAddress = item;
+                    }
+                });
+            }
+            // 获取用户的电话信息
+            if (User.getProp("tel")) {
+                scope.tel = User.getProp("tel");
+            }
+        });
+
+        scope.checkTel = function () {
+            $window.location.href = "#/register";
+        }
+
+        scope.selectAddr = function (addr) {
+            alert("selectAddr");
+            scope.crtAddress = addr;
+            scope.showAddr = false;
+            if (User.user.distributionId !== addr.id) {
+                $http({
+                        url: rootScope.RESTBASE + "/user/changedistribution",
+                        method: "post",
+                        params: {
+                            sig: rootScope.defaultSig.sig,
+                            userId: User.user.id,
+                            distributionId: addr.id
+                        }
+                    }
+                ).success(function (data) {
+                        User.user.distributionId = addr.id;//update user distribution
+                        console.log("update distribute is success: " + JSON.stringify(data));
+                        alert("update distribute is success: " + JSON.stringify(data));
+                    })
+                .error(function (data) {
+                    console.log("update distribute is error: " + JSON.stringify(data));
+                    alert("update distribute is error: " + JSON.stringify(data));
+                });
+            }
+        };
     }])
 
     .directive('addNote', [function () {
@@ -148,23 +204,27 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
         }).when('/register', {
             templateUrl: 'tpl/registertel.html',
             controller: 'registerCtrl'
-        }).when('/detail/:id/:payType', {
+        }).when('/detail/:id/:payType/:prepayId', {
             templateUrl: 'tpl/order_detail.html',
             controller: 'tradeOrderCtrl'
         }).when('/list', {
             templateUrl: 'tpl/order_list.html',
             controller: 'tradeCtrl'
+        }).when('/member', {
+            templateUrl: 'tpl/member.html',
+            controller: 'memberCtrl'
         }).otherwise({
             templateUrl: 'tpl/menuList.html',
             controller: 'listCtrl'
         })
     }]);
-
+////////////////////module mxs////////////////////////////////////////////////////////////////////////////////////
 angular.module("mxs")
     .controller("tradeOrderCtrl", ["$scope", "$location", "$rootScope", '$routeParams', 'orderFactory', function ($scope, $location, $rootScope, $routeParams, order) {
         var orderDeferred = order.pullOrder($routeParams.id);
         var payType = $routeParams.payType;
-        //$scope.wxPay = false;
+        var prepayId = $routeParams.prepayId || "";
+        $scope.wxPay = false;
         if(payType == "wx"){
             $scope.wxPay = true;
         }
@@ -191,13 +251,17 @@ angular.module("mxs")
         });
 
         $scope.toPay = function (){
-            alert("toPay" + $location.absUrl());
+            alert("prepayId = " + prepayId);
+            //alert("toPay" + $location.absUrl());
             var appId = "wxba383cd56b8e9f2e";
             var timeStamp = new Date().getTime();
             var nonceStr = randomStr(32);
-            var packages = "prepay_id=" ;
+            var packages = "prepay_id=" + prepayId;
+            //var paySign = getPaySign(appId, nonceStr, packages, timeStamp);
 
-            function randomStr(len){
+            alert("paySign1 = " + paySign);
+            alert("nonceStr = " + nonceStr);
+            var randomStr = function(len){
                 var len = len | 32;
                 var _chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; 
                 var maxPos = _chars.length;
@@ -207,33 +271,51 @@ angular.module("mxs")
             　　}
             　　return pwd;
             }
-            /*function onBridgeReady(){
-                WeixinJSBridge.invoke(
-                    'getBrandWCPayRequest', {
-                        "appId" ： appId,     //公众号名称，由商户传入     
-                        "timeStamp"：timeStamp,         //时间戳，自1970年以来的秒数     
-                        "nonceStr" ： nonceStr, //随机串     
-                        "package" ： "u802345jgfjsdfgsdg888",     
-                        "signType" ： "MD5",         //微信签名方式：     
-                        "paySign" ： "70EA570631E4BB79628FBCA90534C63FF7FADD89" //微信签名 
-                    },
-                    function(res){     
-                        if(res.err_msg == "get_brand_wcpay_request：ok" ) {}     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
-                    }
-                ); 
-             }
-             if (typeof WeixinJSBridge == "undefined"){
+
+            /*function getPaySign(appId, nonceStr, packages, timeStamp){
+                var tempStr = "appId=" + appId + "&nonceStr=" + nonceStr + "&package=" + packages + "&timeStamp=" + timeStamp;
+                var stringSignTemp = tempStr + "&key=xishicanyinxishicanyin2015090320";
+                var sign = MD5(stringSignTemp).toUpperCase();
+                return sign;
+            }
+            
+            if (typeof WeixinJSBridge == "undefined"){
+                alert("undefined");
                 if( document.addEventListener ){
                     document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
                 }else if (document.attachEvent){
                     document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
                     document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
                 }
-             }else{
+            }else{
                 onBridgeReady();
-             } */
+            }
+
+            function onBridgeReady(){
+                alert("paySign2 = " + paySign);
+                WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest', {
+                        "appId" ： appId,     //公众号名称，由商户传入     
+                        "timeStamp"：timeStamp,         //时间戳，自1970年以来的秒数     
+                        "nonceStr" ： nonceStr, //随机串     
+                        "package" ： packages,     
+                        "signType" ： "MD5",         //微信签名方式：     
+                        "paySign" ： paySign //微信签名 
+                    },
+                    function(res){     
+                        if(res.err_msg == "get_brand_wcpay_request：ok" ) {
+                            alert("支付成功");
+                        }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+                        else{
+                            alert("支付失败");
+                        }
+                    }
+                ); 
+            }*/
 
         }
+
+        
     }])
     .factory("orderFactory", ['$q', '$rootScope', '$q', '$http', function ($scope, $rootScope, $q, $http) {
         var orderFactory = {};
@@ -286,7 +368,7 @@ angular.module("mxs")
 
         return orderFactory;
     }]);
-
+//////////////////////////////////cart模块//////////////////////////////////////////////////
 angular.module('mxs.cart', [])
     .controller('cartCtrl', ['$scope', '$rootScope', '$location', 'Cart', 'userFactory', 'address', '$window', '$http', function (scope, rootScope, $location, Cart, User, address, $window, $http) {
 
@@ -297,15 +379,16 @@ angular.module('mxs.cart', [])
         scope.removeFood = Cart.remove;
         scope.decrease = Cart.decrease;
         scope.add = Cart.add;
-        scope.wxPay = true;
-        scope.facePay = false;
+        scope.wxPay = scope.wxPay || true;
+        scope.facePay = scope.facePay || false;
+        //alert($location.absUrl());
 
         address.save({}, function (addrData) {
             //获得用户的取餐点信息
             var address = scope.address = addrData.data;
-            if (User.getProp("distributeId")) {
+            if (User.getProp("distributionId")) {
                 address.forEach(function (item, index, array) {
-                    if (item.id == User.getProp("id")) {
+                    if (item.id == User.getProp("distributionId")) {
                         scope.crtAddress = item;
                     }
                 });
@@ -318,16 +401,20 @@ angular.module('mxs.cart', [])
 
         //改变支付方式
         scope.changePayStyle = function (){
-            alert("1 " + scope.wxPay);
             scope.wxPay = !scope.wxPay;
-            alert("2 " + scope.wxPay);
             scope.facePay = !scope.facePay;
+            if(scope.wxPay){
+                Cart.cartPayType = 'wx';
+            }else{
+                Cart.cartPayType = 'face';
+            }
         }
         scope.checkTel = function () {
             $window.location.href = "#/register";
         }
 
         scope.selectAddr = function (addr) {
+            alert("selectAddr");
             scope.crtAddress = addr;
             scope.showAddr = false;
             if (User.user.distributionId !== addr.id) {
@@ -343,9 +430,11 @@ angular.module('mxs.cart', [])
                 ).success(function (data) {
                         User.user.distributionId = addr.id;//update user distribution
                         console.log("update distribute is success: " + JSON.stringify(data));
+                        alert("update distribute is success: " + JSON.stringify(data));
                     })
                 .error(function (data) {
                     console.log("update distribute is error: " + JSON.stringify(data));
+                    alert("update distribute is error: " + JSON.stringify(data));
                 });
             }
         };
@@ -360,6 +449,7 @@ angular.module('mxs.cart', [])
         };
 
         scope.checkCart = function () {
+            //alert("Cart.cartPayType = " + Cart.cartPayType);
             var orderList = Cart.getOrder();
             if (orderList === null) {
                 alert("请选择菜品");
@@ -371,8 +461,10 @@ angular.module('mxs.cart', [])
                 $window.location.href = "#/register";
                 return;
             }
-            alert(" alert(scope.wxPay);" + scope.wxPay);
-            alert(" alert(scope.facePay);"+scope.facePay);
+            //alert(" alert(scope.wxPay);" + scope.wxPay);
+            //alert(" alert(scope.facePay);"+scope.facePay);
+
+            var payType = Cart.cartPayType == 'wx' ? 1 : 0;
             $.ajax({
                 url: rootScope.RESTBASE + "/order/commitorder",
                 type: "post",
@@ -381,21 +473,22 @@ angular.module('mxs.cart', [])
                     sig: rootScope.defaultSig.sig,
                     userId: User.user.id || -1,
                     voucherId: 0,
-                    orderType: 0,
+                    orderType: payType,
                     remark: scope.note + "" || "",
                     totalPrice: Cart.totalPrice(),
                     dishes: JSON.stringify(orderList)
                 },
                 success: function (res) {
                     alert(JSON.stringify(res));
-                    alert(scope.wxPay);
                     if (res.ret == 0) {
                         localStorage.setItem("cartList", "{}");
-                        if(scope.wxPay){
+                        if(payType==1){
                             //如果选择微信支付
-                            alert(res.data);
-                            $window.location.href = "#/detail/" + res.data.orderId + "/wx";
+                            alert(JSON.parse(res.data.resp).prepay_id);
+                            var prepay_id = JSON.parse(res.data.resp).prepay_id;
+                            $window.location.href = "#/detail/" + res.data.orderId + "/wx/" + prepay_id;
                         }else{
+                            alert("face");
                             $window.location.href = "#/detail/" + res.data.orderId + "/face";
                         }
                     } else {
@@ -410,6 +503,7 @@ angular.module('mxs.cart', [])
     }])
     .factory('Cart', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
         var n = {
+            cartPayType: "wx",
             list: {},
             add: function (e) {
                 var t = {
@@ -532,7 +626,7 @@ angular.module('mxs.cart', [])
             }
         }
     }]);
-
+//////////////////////mxs/////////////////////////////////////////////////////////////////
 angular.module("mxs")
     .factory("userFactory", ["$rootScope", "$http", "$location", function ($rootScope, $http, $location) {
         var getUserCode = function () {

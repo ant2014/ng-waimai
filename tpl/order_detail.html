@@ -2,7 +2,7 @@
     <a class="xs-header-back" goback="#/order" ng-if="false"><span></span>返回</a>
 
     <div class="xs-header-title flex">
-        <span class="header-rst-name">订单详情{{wxPay}}</span>
+        <span class="header-rst-name">订单详情</span>
     </div>
 </header>
 <div class="trade-order order-status">
@@ -15,7 +15,7 @@
         <a class="ui-btn ui-main-btn" ng-href="#/index.html">继续点餐</a>
     </div>
     <div class="trade-btn-block" ng-if="wxPay">
-        <a class="ui-btn ui-main-btn" ng-click="toPay()">去支付</a>
+        <a class="ui-btn ui-main-btn" ng-click="toPay()" style="color:#fff">去支付</a>
     </div>
 </div>
 <section class="trade-block">

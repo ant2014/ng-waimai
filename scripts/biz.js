@@ -80,6 +80,7 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
     }])
 
     .controller("tradeCtrl", ['$scope', '$rootScope', '$q', '$http', 'userFactory', "$timeout", "$window", function ($scope, $rootScope, $q, $http, user, $timeout, $window) {
+        $scope.selectOrderTyoe = true;
         $scope.foodQuantity = function (order) {
             var count = 0;
             if (!order || !order.dishesType || !order.dishesType.length) return count;
@@ -228,10 +229,11 @@ angular.module("mxs")
         if(payType == "wx"){
             $scope.wxPay = true;
         }
-        var orderStatusEnum = ["处理中", "配送中", "已完成", "已取消"];
+        var orderStatusEnum = ["未支付","已下单", "配送中", "已完成", "已取消"];
         orderDeferred.then(function (data) {
             order.initOrder(data);
             var orderDetail = order.order;
+            alert("orderDetail = " + JSON.parse(orderDetail));
             $scope.order = orderDetail;
             $scope.dishes = orderDetail.dishes;
             $scope.status = {
@@ -251,16 +253,8 @@ angular.module("mxs")
         });
 
         $scope.toPay = function (){
-            alert("prepayId = " + prepayId);
-            //alert("toPay" + $location.absUrl());
-            var appId = "wxba383cd56b8e9f2e";
-            var timeStamp = new Date().getTime();
-            var nonceStr = randomStr(32);
-            var packages = "prepay_id=" + prepayId;
-            //var paySign = getPaySign(appId, nonceStr, packages, timeStamp);
-
-            alert("paySign1 = " + paySign);
-            alert("nonceStr = " + nonceStr);
+            //alert("prepayId = " + prepayId);
+            //获取随机字符串
             var randomStr = function(len){
                 var len = len | 32;
                 var _chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; 
@@ -271,16 +265,55 @@ angular.module("mxs")
             　　}
             　　return pwd;
             }
-
-            /*function getPaySign(appId, nonceStr, packages, timeStamp){
-                var tempStr = "appId=" + appId + "&nonceStr=" + nonceStr + "&package=" + packages + "&timeStamp=" + timeStamp;
-                var stringSignTemp = tempStr + "&key=xishicanyinxishicanyin2015090320";
-                var sign = MD5(stringSignTemp).toUpperCase();
+            //获取paySign
+            var getPaySign = function (appId, nonceStr, packages, timeStamp){
+                var tempStr = "appId=" + appId + "&nonceStr=" + nonceStr + "&package=" + packages + "&signType=MD5&timeStamp=" + timeStamp,
+                    stringSignTemp = tempStr + "&key=bc40604e68cea8c45db1c8b0e900ac7b",
+                    sign = hex_md5(stringSignTemp).toUpperCase();
+                    //alert(stringSignTemp);
                 return sign;
             }
-            
+
+            var appId = "wxba383cd56b8e9f2e";
+            var timeStamp = (Date.parse(new Date())+"").substr(0,10);
+            //var timeStamp = "1441348694";
+            //alert("timeStamp = " + timeStamp);
+            var nonceStr = randomStr(32);
+            //var nonceStr = "h8r5Khdz7zQfmJ5YKz6Pn358EaZKr2Wf";
+            //alert("nonceStr = " + nonceStr);
+            var packages = "prepay_id=" + prepayId;
+            var paySign = getPaySign(appId, nonceStr, packages, timeStamp);
+            //alert("appId = " + appId);
+           // alert("timeStamp = "+timeStamp);
+            //alert("nonceStr = " + nonceStr);
+            //alert("package = " + packages);
+            //alert("paySign = " + paySign);
+            var onBridgeReady = function(){
+                WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest', {
+                        "appId" :  appId,
+                        "timeStamp":timeStamp,              
+                        "nonceStr" : nonceStr, 
+                        "package" : packages,     
+                        "signType" : 'MD5',            
+                        "paySign" : paySign
+                    },
+                    function(res){
+                        alert("res.err_msg = " + res.err_msg +" res=" + JSON.stringify(res));     
+                        if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                            alert("支付成功");
+                            alert("$routeParams.id = " + $routeParams.id);
+                            $window.location.href = "#/detail/" + $routeParams.id;
+                        }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+                        else{
+                            alert("支付失败");
+                        }
+                    }
+                ); 
+            }
+
             if (typeof WeixinJSBridge == "undefined"){
-                alert("undefined");
+                //alert("undefined");
                 if( document.addEventListener ){
                     document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
                 }else if (document.attachEvent){
@@ -290,29 +323,6 @@ angular.module("mxs")
             }else{
                 onBridgeReady();
             }
-
-            function onBridgeReady(){
-                alert("paySign2 = " + paySign);
-                WeixinJSBridge.invoke(
-                    'getBrandWCPayRequest', {
-                        "appId" ： appId,     //公众号名称，由商户传入     
-                        "timeStamp"：timeStamp,         //时间戳，自1970年以来的秒数     
-                        "nonceStr" ： nonceStr, //随机串     
-                        "package" ： packages,     
-                        "signType" ： "MD5",         //微信签名方式：     
-                        "paySign" ： paySign //微信签名 
-                    },
-                    function(res){     
-                        if(res.err_msg == "get_brand_wcpay_request：ok" ) {
-                            alert("支付成功");
-                        }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
-                        else{
-                            alert("支付失败");
-                        }
-                    }
-                ); 
-            }*/
-
         }
 
         
@@ -484,7 +494,7 @@ angular.module('mxs.cart', [])
                         localStorage.setItem("cartList", "{}");
                         if(payType==1){
                             //如果选择微信支付
-                            alert(JSON.parse(res.data.resp).prepay_id);
+                            //alert(JSON.parse(res.data.resp).prepay_id);
                             var prepay_id = JSON.parse(res.data.resp).prepay_id;
                             $window.location.href = "#/detail/" + res.data.orderId + "/wx/" + prepay_id;
                         }else{

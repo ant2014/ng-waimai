@@ -791,6 +791,11 @@ button.logreg-btn {
     margin-bottom: 8px;
 }
 
+.order-selectedOrderType {
+    background: #360;
+    color: #fff;
+}
+
 .order-status-now {
     font-size: 1rem;
     margin-bottom: 18px;

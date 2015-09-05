@@ -4,7 +4,7 @@ angular.module('mxs.services', ['ngResource'])
         $rootScope.ROOTHOST = b;
         $rootScope.RESTBASE = 'http://www.' + $rootScope.ROOTHOST + "/beehive/microsite";
         $rootScope.defaultSig = {sig: "DBE8317A0D713425B738C762D1639492"};
-        $rootScope.RESTBASE = "http://localhost:8123/beehive/microsite";
+        //$rootScope.RESTBASE = "http://localhost:8123/beehive/microsite";
     }])
 
     .factory('dishes', ['$resource', '$rootScope', function ($resource, $rootScope) {

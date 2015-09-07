@@ -23,7 +23,7 @@
                 <div class="xs-dish-container" ng-repeat="dish in dishes">
                     <img ng-if="dish.picture&&(dish.picture != '/')" ng-src="{{dish.picture}}" width="70" height="70">
 
-                    <div class="xs-dish-body">
+                    <div class="xs-dish-body" style="width:100%;">
                         <p class="xs-dish-name" ng-bind="dish.name"></p>
 
                         <p class="xs-dish-description" ng-bind="dish.desc"></p>
@@ -34,11 +34,11 @@
                         <div class="xs-dish-footer">
                             <span class="xs-dish-price" ng-bind="dish.price | currency : '¥'"></span>
 
-                            <div class="xs-dish-control">{{JSON.parse(cart.list)}}
-                            <span class="btn xs-dish-decrease ng-hide" cart-decrease ng-click="decrease()"
+                            <div class="xs-dish-control" style="positon:absolute;top:0;right:0px;">{{JSON.parse(cart.list)}}
+                                <span class="btn xs-dish-decrease ng-hide" style="height:25px;line-height:25px;display:block;" cart-decrease ng-click="decrease()"
                                   ng-hide="!cart.list[dish.id].quantity"></span>
-                                <span class="xs-dish-count" ng-bind="cart.list[dish.id].quantity||''"></span>
-                                <span class="btn xs-dish-add" cart-add ng-click="add(dish)"></span>
+                                <span class="xs-dish-count" style="height:25px;line-height:25px;display:block;" ng-bind="cart.list[dish.id].quantity||''"></span>
+                                <span class="btn xs-dish-add" style="height:25px;line-height:25px;display:block;" cart-add ng-click="add(dish)"></span>
                             </div>
                         </div>
                     </div>

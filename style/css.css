@@ -132,7 +132,7 @@ html {
     position: relative;
     z-index: 20;
     height: 40px;
-    background: #3199e8;
+    background: #E74E43;
     color: #fff;
     line-height: 44px;
     font-size: 1.05rem;
@@ -153,13 +153,16 @@ html {
 }
 
 .xs-header-back {
+    color: #fff;
     width: 67px;
     height: 40px;
     display: block;
     position: relative;
     left: 3.5%;
 }
-
+a:active {color: #fff;}
+a:visited {color:#fff;}
+a:link{color:#fff;}
 .xs-header-back span {
     display: block;
     width: 9px;
@@ -246,7 +249,7 @@ html {
     border-radius: 8px;
     text-align: center;
     color: #fff;
-    background: #3199e8;
+    background: #E74E43;
     font-size: 12px;
     margin-right: 2px;
 }
@@ -292,7 +295,7 @@ html {
 
 .xs-dish-container .xs-dish-body .xs-dish-control {
     height: 25px;
-    width: 70px;
+    width: 90px;
 }
 
 .xs-dish-container .xs-dish-body .xs-dish-control .btn {
@@ -312,7 +315,8 @@ html {
 }
 
 .xs-dish-container .xs-dish-body .xs-dish-control .xs-dish-count {
-    height: 16px;
+    height: 25px;
+    line-height: 25px;
     margin: 0 3px;
     color: #999;
     font-size: 0.875rem;
@@ -469,7 +473,7 @@ html {
     display: block;
     width: 100%;
     padding: 10px 0;
-    background: #3199e8;
+    background: #E74E43;
     border: none;
     color: #fff;
     border-radius: 3px;
@@ -536,7 +540,10 @@ html {
 }
 
 .payonline-btn {
-    float: right;
+    /* float: right; */
+    position: absolute;
+    right: 5px;
+    top: 8px;
     margin-top: 2px;
     display: inline-block;
     width: 21px;
@@ -544,7 +551,7 @@ html {
 }
 
 .payonline-btn.pay-selected {
-    background: #3199e8;
+    background: #E74E43;
     border-radius: 10px;
     color: #fff;
 }
@@ -663,8 +670,8 @@ textarea.ui-textarea {
 }
 
 .delivery-quick-note > .dnote.ui-selected {
-    border: 1px solid #3199e8;
-    color: #3199e8;
+    border: 1px solid #E74E43;
+    color: #E74E43;
     background: none;
 }
 
@@ -792,7 +799,7 @@ button.logreg-btn {
 }
 
 .order-selectedOrderType {
-    background: #360;
+    background: #E74E43;
     color: #fff;
 }
 

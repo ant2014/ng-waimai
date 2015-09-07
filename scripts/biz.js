@@ -45,8 +45,9 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
     .directive('goback', ['$location', function ($location) {
         return function (scope, ele, attrs) {
             ele.on('click', function () {
+                alert("a" + attrs.goback);
                 return function () {
-                    return $location.url(attrs.goback);
+                    return $location.url("#"+attrs.goback);
                 }
             })
         }
@@ -80,7 +81,7 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
     }])
 
     .controller("tradeCtrl", ['$scope', '$rootScope', '$q', '$http', 'userFactory', "$timeout", "$window", function ($scope, $rootScope, $q, $http, user, $timeout, $window) {
-        $scope.selectOrderTyoe = true;
+        $scope.selectOrderType = true;
         $scope.foodQuantity = function (order) {
             var count = 0;
             if (!order || !order.dishesType || !order.dishesType.length) return count;
@@ -110,20 +111,32 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
             }).success(function (res) {
                 if (res.ret == 0) {
                     $scope.orders = res.data;
-                    var orderStatusEnum = ["处理中", "配送中", "已完成", "已取消"];
+                    //var orderStatusEnum = ["处理中", "配送中", "已完成", "已取消"];
+                    var orderStatusEnum = ["未支付", "已下单", "配送中", "已完成", "已取消"];
+                    var orderTypeEnum = ["餐到付款", "微信支付"];
                     var len = res.data.length;
                     $scope.hasRecord = !!len;
+                    $scope.currentOrders = [];
+                    $scope.historyOrders = [];
                     for (var i = 0; i < len; i++) {
                         var item = res.data[i];
                         item.status_title = orderStatusEnum[item.status];
+                        item.orderTypeCN = orderTypeEnum[item.orderType];
+                        if(item.status == 2 || item.status == 3){
+                            $scope.historyOrders.push(item);
+                        }else{
+                            $scope.currentOrders.push(item);
+                        }
                     }
+                    //alert("$scope.currentOrders = " + JSON.stringify($scope.currentOrders));
                     allOrderList = item;
+                    
+
                 } else {
                     alert("获取订单信息失败：" + res.msg);
                 }
             }).error(function (res) {
                 alert("获取订单信息失败：" + JSON.stringify(res));
-                console.log("获取订单信息失败：", res);
             });
         };
 
@@ -208,6 +221,9 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
         }).when('/detail/:id/:payType/:prepayId', {
             templateUrl: 'tpl/order_detail.html',
             controller: 'tradeOrderCtrl'
+        }).when('/detail/:id', {
+            templateUrl: 'tpl/order_detail.html',
+            controller: 'tradeOrderFinCtrl'
         }).when('/list', {
             templateUrl: 'tpl/order_list.html',
             controller: 'tradeCtrl'
@@ -221,19 +237,23 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
     }]);
 ////////////////////module mxs////////////////////////////////////////////////////////////////////////////////////
 angular.module("mxs")
-    .controller("tradeOrderCtrl", ["$scope", "$location", "$rootScope", '$routeParams', 'orderFactory', function ($scope, $location, $rootScope, $routeParams, order) {
+    .controller("tradeOrderCtrl", ["$scope", "$window", "$location", "$rootScope", '$routeParams', 'orderFactory', function ($scope, $window, $location, $rootScope, $routeParams, order) {
         var orderDeferred = order.pullOrder($routeParams.id);
+        alert("$routeParams.id = " + $routeParams.id);
+        alert("orderDeferred = " + JSON.stringify(orderDeferred));
         var payType = $routeParams.payType;
+        alert("payType = " + payType);
         var prepayId = $routeParams.prepayId || "";
+        alert("prepayId = " + prepayId);
         $scope.wxPay = false;
         if(payType == "wx"){
             $scope.wxPay = true;
         }
-        var orderStatusEnum = ["未支付","已下单", "配送中", "已完成", "已取消"];
+        var orderStatusEnum = ["未支付", "已下单", "配送中", "已完成", "已取消"];
         orderDeferred.then(function (data) {
             order.initOrder(data);
             var orderDetail = order.order;
-            alert("orderDetail = " + JSON.parse(orderDetail));
+            alert("orderDetail = " + JSON.stringify(orderDetail));
             $scope.order = orderDetail;
             $scope.dishes = orderDetail.dishes;
             $scope.status = {
@@ -301,12 +321,13 @@ angular.module("mxs")
                     function(res){
                         alert("res.err_msg = " + res.err_msg +" res=" + JSON.stringify(res));     
                         if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-                            alert("支付成功");
-                            alert("$routeParams.id = " + $routeParams.id);
+                            alert("支付成功1");
+                            alert("$routeParams.id1 =" + $routeParams.id);
                             $window.location.href = "#/detail/" + $routeParams.id;
+                            alert("跳转了");
                         }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
                         else{
-                            alert("支付失败");
+                            alert("支付失败,请重试");
                         }
                     }
                 ); 
@@ -324,6 +345,44 @@ angular.module("mxs")
                 onBridgeReady();
             }
         }
+
+        
+    }])
+    .controller("tradeOrderFinCtrl", ["$scope", "$window", "$location", "$rootScope", '$routeParams', 'orderFactory', function ($scope, $window, $location, $rootScope, $routeParams, order) {
+        alert("tradeOrderFinCtrl");
+        var orderDeferred = order.pullOrder($routeParams.id);
+        alert("$routeParams.id = " + $routeParams.id);
+        alert("orderDeferred = " + JSON.stringify(orderDeferred));
+        var payType = $routeParams.payType;
+        alert("payType = " + payType);
+        var prepayId = $routeParams.prepayId || "";
+        alert("prepayId = " + prepayId);
+        $scope.wxPay = false;
+        if(payType == "wx"){
+            $scope.wxPay = true;
+        }
+        var orderStatusEnum = ["未支付", "已下单", "配送中", "已完成", "已取消"];
+        orderDeferred.then(function (data) {
+            order.initOrder(data);
+            var orderDetail = order.order;
+            alert("orderDetail = " + JSON.stringify(orderDetail));
+            $scope.order = orderDetail;
+            $scope.dishes = orderDetail.dishes;
+            $scope.status = {
+                "orderId": orderDetail.orderId,
+                "title": orderStatusEnum[orderDetail.status],
+                "description": ""
+            };
+            $scope.total = orderDetail.totalPrice;
+            $scope.foodQuantity = function () {
+                var totalCount = 0;
+                for (var i = 0; i < orderDetail.dishes.length; i++) {
+                    var dishItem = orderDetail.dishes[i];
+                    totalCount += dishItem.count;
+                }
+                return totalCount;
+            };
+        });
 
         
     }])
@@ -365,6 +424,7 @@ angular.module("mxs")
                 }
             }).success(function (data) {
                 if (data.ret === 0) {
+                    alert("orderData = " + JSON.stringify(data));
                     deferred.resolve(data.data);
                 } else {
                     deferred.reject(data);
@@ -489,7 +549,7 @@ angular.module('mxs.cart', [])
                     dishes: JSON.stringify(orderList)
                 },
                 success: function (res) {
-                    alert(JSON.stringify(res));
+                    alert("res="+JSON.stringify(res));
                     if (res.ret == 0) {
                         localStorage.setItem("cartList", "{}");
                         if(payType==1){

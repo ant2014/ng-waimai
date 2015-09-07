@@ -30,13 +30,13 @@
     <div class='delivery-dish-detail delivery-block'>
         <span class="delivery-pay-name">支付方式</span>
     </div>
-    <div class="delivery-dish-detail delivery-block payonline-item">
+    <div class="delivery-dish-detail delivery-block payonline-item" ng-click="changePayStyle()" ng-class="{ 'pay-selected': facePay }">
         <span class="delivery-pay-name">微信支付</span>
-        <span class="payonline-btn" ng-click="changePayStyle()" ng-class="{ 'pay-selected': wxPay }">√</span>
+        <span class="payonline-btn" ng-click="changePayStyle()" ng-class="{ 'pay-selected': wxPay }" ng-if="wxPay">√</span>
     </div>
-    <div class="delivery-dish-detail delivery-block payonline-item">
+    <div class="delivery-dish-detail delivery-block payonline-item" ng-click="changePayStyle()" ng-class="{ 'pay-selected': facePay }">
         <span class="delivery-pay-name">餐到付款</span>
-        <span class="payonline-btn" ng-click="changePayStyle()" ng-class="{ 'pay-selected': facePay }">√</span>
+        <span class="payonline-btn" ng-click="changePayStyle()" ng-class="{ 'pay-selected': facePay }" ng-if="facePay">√</span>
     </div>
     <!--<div class="delivery-dish-detail delivery-block payonline-item">
         <div>

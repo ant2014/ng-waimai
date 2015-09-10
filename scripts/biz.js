@@ -82,6 +82,7 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
 
     .controller("tradeCtrl", ['$scope', '$rootScope', '$q', '$http', 'userFactory', "$timeout", "$window", function ($scope, $rootScope, $q, $http, user, $timeout, $window) {
         $scope.selectOrderType = true;
+        $scope.hasRecord = true;
         $scope.foodQuantity = function (order) {
             var count = 0;
             if (!order || !order.dishesType || !order.dishesType.length) return count;
@@ -168,7 +169,7 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
         }
 
         scope.selectAddr = function (addr) {
-            alert("selectAddr");
+            //alert("selectAddr");
             scope.crtAddress = addr;
             scope.showAddr = false;
             if (User.user.distributionId !== addr.id) {
@@ -184,11 +185,11 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
                 ).success(function (data) {
                         User.user.distributionId = addr.id;//update user distribution
                         console.log("update distribute is success: " + JSON.stringify(data));
-                        alert("update distribute is success: " + JSON.stringify(data));
+                        //alert("update distribute is success: " + JSON.stringify(data));
                     })
                 .error(function (data) {
                     console.log("update distribute is error: " + JSON.stringify(data));
-                    alert("update distribute is error: " + JSON.stringify(data));
+                    //alert("update distribute is error: " + JSON.stringify(data));
                 });
             }
         };
@@ -239,12 +240,12 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
 angular.module("mxs")
     .controller("tradeOrderCtrl", ["$scope", "$window", "$location", "$rootScope", '$routeParams', 'orderFactory', function ($scope, $window, $location, $rootScope, $routeParams, order) {
         var orderDeferred = order.pullOrder($routeParams.id);
-        alert("$routeParams.id = " + $routeParams.id);
-        alert("orderDeferred = " + JSON.stringify(orderDeferred));
+        //alert("$routeParams.id = " + $routeParams.id);
+        //alert("orderDeferred = " + JSON.stringify(orderDeferred));
         var payType = $routeParams.payType;
-        alert("payType = " + payType);
+        //alert("payType = " + payType);
         var prepayId = $routeParams.prepayId || "";
-        alert("prepayId = " + prepayId);
+        //alert("prepayId = " + prepayId);
         $scope.wxPay = false;
         if(payType == "wx"){
             $scope.wxPay = true;
@@ -255,6 +256,7 @@ angular.module("mxs")
             var orderDetail = order.order;
             alert("orderDetail = " + JSON.stringify(orderDetail));
             $scope.order = orderDetail;
+
             $scope.dishes = orderDetail.dishes;
             $scope.status = {
                 "orderId": orderDetail.orderId,
@@ -296,18 +298,9 @@ angular.module("mxs")
 
             var appId = "wxba383cd56b8e9f2e";
             var timeStamp = (Date.parse(new Date())+"").substr(0,10);
-            //var timeStamp = "1441348694";
-            //alert("timeStamp = " + timeStamp);
             var nonceStr = randomStr(32);
-            //var nonceStr = "h8r5Khdz7zQfmJ5YKz6Pn358EaZKr2Wf";
-            //alert("nonceStr = " + nonceStr);
             var packages = "prepay_id=" + prepayId;
             var paySign = getPaySign(appId, nonceStr, packages, timeStamp);
-            //alert("appId = " + appId);
-           // alert("timeStamp = "+timeStamp);
-            //alert("nonceStr = " + nonceStr);
-            //alert("package = " + packages);
-            //alert("paySign = " + paySign);
             var onBridgeReady = function(){
                 WeixinJSBridge.invoke(
                     'getBrandWCPayRequest', {
@@ -319,12 +312,12 @@ angular.module("mxs")
                         "paySign" : paySign
                     },
                     function(res){
-                        alert("res.err_msg = " + res.err_msg +" res=" + JSON.stringify(res));     
+                        //alert("res.err_msg = " + res.err_msg +" res=" + JSON.stringify(res));     
                         if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-                            alert("支付成功1");
-                            alert("$routeParams.id1 =" + $routeParams.id);
+                            //alert("支付成功1");
+                            //alert("$routeParams.id1 =" + $routeParams.id);
                             $window.location.href = "#/detail/" + $routeParams.id;
-                            alert("跳转了");
+                            //alert("跳转了");
                         }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
                         else{
                             alert("支付失败,请重试");
@@ -349,23 +342,23 @@ angular.module("mxs")
         
     }])
     .controller("tradeOrderFinCtrl", ["$scope", "$window", "$location", "$rootScope", '$routeParams', 'orderFactory', function ($scope, $window, $location, $rootScope, $routeParams, order) {
-        alert("tradeOrderFinCtrl");
+        //alert("tradeOrderFinCtrl");
         var orderDeferred = order.pullOrder($routeParams.id);
-        alert("$routeParams.id = " + $routeParams.id);
-        alert("orderDeferred = " + JSON.stringify(orderDeferred));
+        //alert("$routeParams.id = " + $routeParams.id);
+        //alert("orderDeferred = " + JSON.stringify(orderDeferred));
         var payType = $routeParams.payType;
-        alert("payType = " + payType);
+        //alert("payType = " + payType);
         var prepayId = $routeParams.prepayId || "";
-        alert("prepayId = " + prepayId);
+        //alert("prepayId = " + prepayId);
         $scope.wxPay = false;
         if(payType == "wx"){
             $scope.wxPay = true;
         }
-        var orderStatusEnum = ["未支付", "已下单", "配送中", "已完成", "已取消"];
+        var orderStatusEnum = ["未支付", "配送中", "已完成", "已取消", "已下单"];
         orderDeferred.then(function (data) {
             order.initOrder(data);
             var orderDetail = order.order;
-            alert("orderDetail = " + JSON.stringify(orderDetail));
+            //alert("orderDetail1 = " + JSON.stringify(orderDetail));
             $scope.order = orderDetail;
             $scope.dishes = orderDetail.dishes;
             $scope.status = {
@@ -373,6 +366,17 @@ angular.module("mxs")
                 "title": orderStatusEnum[orderDetail.status],
                 "description": ""
             };
+            //alert("orderDetail.status = " + orderDetail.status);
+            //alert("hasPaid = " + orderDetail.hasPaid);
+            if((orderDetail.status == 0) && (orderDetail.hasPaid)){
+                //alert("判断支付成功");
+                $scope.status.title = orderStatusEnum[4];
+                $scope.wxPay = false;
+            }else{                //alert("判断支付失败");
+
+
+            }
+
             $scope.total = orderDetail.totalPrice;
             $scope.foodQuantity = function () {
                 var totalCount = 0;
@@ -400,7 +404,8 @@ angular.module("mxs")
             tel: "",
             operator: "",
             totalPrice: "",
-            dishes: ""
+            dishes: "",
+            hasPaid: ""
         };
 
         orderFactory.initOrder = function (order) {
@@ -424,7 +429,7 @@ angular.module("mxs")
                 }
             }).success(function (data) {
                 if (data.ret === 0) {
-                    alert("orderData = " + JSON.stringify(data));
+                    //alert("orderData1 = " + JSON.stringify(data));
                     deferred.resolve(data.data);
                 } else {
                     deferred.reject(data);
@@ -484,7 +489,6 @@ angular.module('mxs.cart', [])
         }
 
         scope.selectAddr = function (addr) {
-            alert("selectAddr");
             scope.crtAddress = addr;
             scope.showAddr = false;
             if (User.user.distributionId !== addr.id) {
@@ -500,11 +504,9 @@ angular.module('mxs.cart', [])
                 ).success(function (data) {
                         User.user.distributionId = addr.id;//update user distribution
                         console.log("update distribute is success: " + JSON.stringify(data));
-                        alert("update distribute is success: " + JSON.stringify(data));
                     })
                 .error(function (data) {
                     console.log("update distribute is error: " + JSON.stringify(data));
-                    alert("update distribute is error: " + JSON.stringify(data));
                 });
             }
         };
@@ -549,7 +551,7 @@ angular.module('mxs.cart', [])
                     dishes: JSON.stringify(orderList)
                 },
                 success: function (res) {
-                    alert("res="+JSON.stringify(res));
+                    //alert("res="+JSON.stringify(res));
                     if (res.ret == 0) {
                         localStorage.setItem("cartList", "{}");
                         if(payType==1){
@@ -558,8 +560,7 @@ angular.module('mxs.cart', [])
                             var prepay_id = JSON.parse(res.data.resp).prepay_id;
                             $window.location.href = "#/detail/" + res.data.orderId + "/wx/" + prepay_id;
                         }else{
-                            alert("face");
-                            $window.location.href = "#/detail/" + res.data.orderId + "/face";
+                            $window.location.href = "#/detail/" + res.data.orderId + "/face/null";
                         }
                     } else {
                         alert("订单提交失败：" + res.msg);

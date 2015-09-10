@@ -800,7 +800,7 @@ button.logreg-btn {
 
 .order-selectedOrderType {
     background: #E74E43;
-    color: #fff;
+    color: #fff!important;
 }
 
 .order-status-now {
@@ -999,5 +999,44 @@ button.logreg-btn {
     font-size: .8rem;
     color: #999;
 }
+/**查询订单**/
+.trad-order-body{
+    background-color: #EDEDEE;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
 
+.trade-order-content{
+    min-height: 100%;
+    height: 100%;
+}
+
+.trade-order-button{
+    margin-top: 10px;
+    width: 100px;
+    height: 35px;
+    border-color: #E74E43;
+    color: #E74E43
+}
+.button-left{
+    border-radius: 8px 0px 0px 8px;
+    border-right: 0;
+}
+.button-right{
+    border-radius: 0px 8px 8px 0px;
+}
+.trade-order-button-section{
+    width: 100%;
+    height: 45px;
+    text-align: center;   
+}
+.order-list-li{
+    margin-top: 20px; 
+    padding: 10px;
+    background-color: #fff;
+}
+.trade-orders-content-ul{
+    background-color: #EDEDEE;
+}
 /*order list end*/

@@ -144,11 +144,51 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
         timeer = $timeout(init, 100);
     }])
 
-    .controller("memberCtrl", ['$scope', '$rootScope', '$location', 'Cart', 'userFactory', "address", "$window",'$http', function (scope, rootScope, $location, Cart, User, address, $window, $http) {
-        address.save({}, function (addrData) {
+    .controller("memberCtrl", ['$scope', '$rootScope', '$location', 'Cart', 'userFactory', "address", "$window",'$http', '$timeout', function (scope, rootScope, $location, Cart, User, address, $window, $http, $timeout) {
+
+        // 获取用户的电话信息
+        /*User.pullRemote();*/
+        scope.showTel = false;
+        var getUserTimeer;
+        var init = function(){
+            var userId = User.getProp("id");
+            //alert("userId = " + userId);
+            if(userId){ //存在
+                scope.tel = "-" + User.getProp("tel") + "-";
+
+                address.save({}, function (addrData) {
+                    //获得用户的取餐点信息
+                    var address = scope.address = addrData.data;
+                    //alert("address= " + JSON.stringify(address));
+                    //alert("user =" + JSON.stringify(User));
+                    //alert("1-User.getProp(\"distributeId\") = " + User.getProp("distributeId"));
+                    if (User.getProp("distributionId")) {
+                        address.forEach(function (item, index, array) {
+                            if (item.id == User.getProp("distributionId")) {
+                                scope.crtAddress = item;
+                            }
+                        });
+                    }
+                })
+                $timeout.cancel(getUserTimeer);
+            }else{ //不存在
+                getUserTimeer = $timeout(init, 100);
+                return;
+            }
+        }
+        getUserTimeer = $timeout(init, 100);
+        /*alert("User2 = " + JSON.stringify(User.user));
+        var telNum = User.getProp("tel");
+        alert("telNum = " + telNum);
+        if (telNum) {
+            scope.tel = User.getProp("tel");
+            alert("tel = " + scope.tel);
+        }*/
+
+        /*address.save({}, function (addrData) {
             //获得用户的取餐点信息
             var address = scope.address = addrData.data;
-            //alert("address= " + JSON.stringify(address));
+            alert("address= " + JSON.stringify(address));
             //alert("user =" + JSON.stringify(User));
             //alert("1-User.getProp(\"distributeId\") = " + User.getProp("distributeId"));
             if (User.getProp("distributionId")) {
@@ -158,11 +198,16 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
                     }
                 });
             }
+
             // 获取用户的电话信息
-            if (User.getProp("tel")) {
+            /*var telNum = User.getProp("tel");
+            alert("telNum = " + telNum);
+            if (telNum) {
                 scope.tel = User.getProp("tel");
-            }
-        });
+                alert("tel = " + scope.tel);
+            }*/
+            
+        /*});*/
 
         scope.checkTel = function () {
             $window.location.href = "#/register";
@@ -184,15 +229,60 @@ angular.module("mxs", ['ngRoute', 'ngResource', 'mxs.cart', 'mxs.services'])
                     }
                 ).success(function (data) {
                         User.user.distributionId = addr.id;//update user distribution
-                        console.log("update distribute is success: " + JSON.stringify(data));
+                        //console.log("update distribute is success: " + JSON.stringify(data));
                         //alert("update distribute is success: " + JSON.stringify(data));
                     })
                 .error(function (data) {
-                    console.log("update distribute is error: " + JSON.stringify(data));
+                    //console.log("update distribute is error: " + JSON.stringify(data));
                     //alert("update distribute is error: " + JSON.stringify(data));
                 });
             }
         };
+
+        // 绑定手机
+        scope.user = {
+            mobile: "",
+            code: ""
+        };
+        scope.sendCode = function () {
+            //alert("点击了发送验证码");
+            $http({
+                url: rootScope.RESTBASE + "/user/sendvalidatecode",
+                method: "post",
+                params: {
+                    sig: rootScope.defaultSig.sig,
+                    userId: User.user.id,
+                    tel: scope.user.mobile
+                }
+            }).success(function (data) {
+                alert("验证码发送成功.");
+                scope.countdown = !0;
+            }).error(function (data) {
+                scope.countdown = !1;
+            });
+        };
+        scope.updateTel = function () {
+            //alert("点击了绑定");
+            $http({
+                url: rootScope.RESTBASE + "/user/updatetel",
+                method: "post",
+                params: {
+                    sig: rootScope.defaultSig.sig,
+                    userId: User.user.id,
+                    tel: scope.user.mobile,
+                    validateCode: scope.user.code
+                }
+            }).success(function (data) {
+                alert("更新手机成功");
+                scope.showTel = false;
+                scope.tel = "-" + scope.user.mobile + "-";;
+                //$window.location.href = "#/member";
+                //$window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxba383cd56b8e9f2e&redirect_uri=http://www.bluerangers.cn/beehivefe/member.html&response_type=code&scope=snsapi_userinfo";
+            }).error(function (data) {
+                alert("更新手机号码失败：" + data.msg);
+            })
+        };
+
     }])
 
     .directive('addNote', [function () {
@@ -249,13 +339,19 @@ angular.module("mxs")
         $scope.wxPay = false;
         if(payType == "wx"){
             $scope.wxPay = true;
+            var orderStatusEnum = ["未支付", "配送中", "已完成", "已取消", "已下单"];
+        }else{
+            var orderStatusEnum = ["已下单", "配送中", "已完成", "已取消"];
         }
-        var orderStatusEnum = ["未支付", "已下单", "配送中", "已完成", "已取消"];
+        //var orderStatusEnum = ["未支付", "已下单", "配送中", "已完成", "已取消"];
+        //var orderStatusEnum = ["未支付", "配送中", "已完成", "已取消", "已下单"];
         orderDeferred.then(function (data) {
             order.initOrder(data);
             var orderDetail = order.order;
-            alert("orderDetail = " + JSON.stringify(orderDetail));
+            //alert("orderDetail = " + JSON.stringify(orderDetail));
             $scope.order = orderDetail;
+            $scope.order.orderId = "-"+$scope.order.orderId+"-";
+            $scope.order.tel = "-"+$scope.order.tel+"-";
 
             $scope.dishes = orderDetail.dishes;
             $scope.status = {
@@ -273,6 +369,11 @@ angular.module("mxs")
                 return totalCount;
             };
         });
+
+        $scope.toContinueOrder = function(){
+            localStorage.setItem("cartList", "{}");
+            $window.location.href = "#/index.html";
+        }
 
         $scope.toPay = function (){
             //alert("prepayId = " + prepayId);
@@ -316,6 +417,7 @@ angular.module("mxs")
                         if(res.err_msg == "get_brand_wcpay_request:ok" ) {
                             //alert("支付成功1");
                             //alert("$routeParams.id1 =" + $routeParams.id);
+                            localStorage.setItem("cartList", "{}");
                             $window.location.href = "#/detail/" + $routeParams.id;
                             //alert("跳转了");
                         }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
@@ -373,10 +475,12 @@ angular.module("mxs")
                 $scope.status.title = orderStatusEnum[4];
                 $scope.wxPay = false;
             }else{                //alert("判断支付失败");
-
+                alert("支付失败，请重新尝试，或联系客服");
 
             }
-
+            $scope.order.orderId = "-"+$scope.order.orderId+"-";
+            $scope.order.tel = "-"+$scope.order.tel+"-";
+            
             $scope.total = orderDetail.totalPrice;
             $scope.foodQuantity = function () {
                 var totalCount = 0;
@@ -388,6 +492,10 @@ angular.module("mxs")
             };
         });
 
+        $scope.toContinueOrder = function(){
+            localStorage.setItem("cartList", "{}");
+            $window.location.href = "#/index.html";
+        }
         
     }])
     .factory("orderFactory", ['$q', '$rootScope', '$q', '$http', function ($scope, $rootScope, $q, $http) {
@@ -470,7 +578,7 @@ angular.module('mxs.cart', [])
             }
             // 获取用户的电话信息
             if (User.getProp("tel")) {
-                scope.tel = User.getProp("tel");
+                scope.tel = "-" + User.getProp("tel") + "-";
             }
         });
 
@@ -537,6 +645,7 @@ angular.module('mxs.cart', [])
             //alert(" alert(scope.facePay);"+scope.facePay);
 
             var payType = Cart.cartPayType == 'wx' ? 1 : 0;
+            
             $.ajax({
                 url: rootScope.RESTBASE + "/order/commitorder",
                 type: "post",
@@ -553,7 +662,7 @@ angular.module('mxs.cart', [])
                 success: function (res) {
                     //alert("res="+JSON.stringify(res));
                     if (res.ret == 0) {
-                        localStorage.setItem("cartList", "{}");
+                        //localStorage.setItem("cartList", "{}");
                         if(payType==1){
                             //如果选择微信支付
                             //alert(JSON.parse(res.data.resp).prepay_id);
@@ -745,7 +854,7 @@ angular.module("mxs")
                         code: getUserCode() + ""
                     }
                 }).success(function (data) {
-                    //alert(JSON.stringify(data));
+                    //alert("User = " + JSON.stringify(data));
                     _this.setUser(data.data);
                 })
             }

@@ -6,7 +6,7 @@
     </div>
 </header> -->
 <div class="trad-order-body">
-    <div class="ui-center-container" ng-if="!hasRecord">
+    <!-- <div class="ui-center-container" ng-if="!hasRecord">
         <h2 class="ui-center-block-title" style="text-align:center;margin-top:10px;">
             您还未下过单
         </h2>
@@ -14,8 +14,8 @@
         <p class="ui-center-block-desc" style="text-align:center">
             快去体验一下吧
         </p>
-    </div>
-    <div ng-if="hasRecord" class="trade-order-content">
+    </div> -->
+    <div class="trade-order-content">
         <section class="trade-order-button-section" skate-shoes="dishType">
            <button class="trade-order-button button-left" ng-class="{ 'order-selectedOrderType':selectOrderType }" ng-click="selectOrderType = !selectOrderType">当前订单</button><button class="trade-order-button button-right" ng-class="{ 'order-selectedOrderType':!selectOrderType }" ng-click="selectOrderType = !selectOrderType">历史订单</button>
         </section>
@@ -63,7 +63,18 @@
                     </div>
                 </li>
             </ul>
+            <div class="ui-center-container" ng-if="currentOrders.length <= 0">
+                <h2 class="ui-center-block-title" style="text-align:center;margin-top:10px;">
+                    您当前没有订单
+                </h2>
+
+                <p class="ui-center-block-desc" style="text-align:center">
+                    快去体验一下吧
+                </p>
+            </div>
         </section>
+
+
 
         <section ng-if="!selectOrderType">
             <ul class="trade-orders-content-ul">
@@ -111,8 +122,25 @@
                     </div>
                 </a> -->
             </ul>
-        </section>
+            <div class="ui-center-container" ng-if="historyOrders.length <= 0">
+                <h2 class="ui-center-block-title" style="text-align:center;margin-top:10px;">
+                    您历史订单
+                </h2>
 
+                <p class="ui-center-block-desc" style="text-align:center">
+                    快去体验一下吧
+                </p>
+            </div>
+        </section>
+        <div class="ui-center-container" ng-if="!hasRecord">
+            <h2 class="ui-center-block-title" style="text-align:center;margin-top:10px;">
+                您还未下过单
+            </h2>
+
+            <p class="ui-center-block-desc" style="text-align:center">
+                快去体验一下吧
+            </p>
+        </div>
         
     </div>
 </div>

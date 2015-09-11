@@ -5,45 +5,90 @@
         <span class="header-rst-name">会员中心</span>
     </div>
 </header>
-<section class='ui-padding-block delivery-block' ng-click="checkTel()">
-    <div>
-        <p class="clear-margin" ng-if="tel">
-            绑定手机：<span ng-bind="tel"></span>
-        </p>
+<div style="height:100%;width:100%;position:absolute;background-color:#EDEDEE">
+    <section class='ui-padding-block delivery-block' ng-click="showTel = !showTel">
+        <div>
+            <p class="clear-margin" ng-if="tel">
+                绑定手机：<span ng-bind="tel"></span>
+            </p>
 
-        <p class="class-margin" ng-if="!tel">请绑定手机</p>
-    </div>
-    <span class='ui-enter ui-gt'>&gt;</span>
-</section>
-<section class='ui-padding-block delivery-block' ng-click="showAddr = !showAddr">
-    <div>
-        <p class="clear-margin" ng-if="crtAddress">
-            <span>默认取餐点：</span><br/>
-            <span ng-show="crtAddress.name" ng-bind="crtAddress.name"></span><br/>
-            <span ng-bind="crtAddress.address"></span>
-        </p>
-
-        <p class="class-margin" ng-if="!crtAddress">请设置默认取餐点</p>
-    </div>
-    <span class='ui-enter ui-gt'>&gt;</span>
-</section>
-<div class="slide-block" ng-class="{ 'ui-slide-in':showAddr }">
-    <header class="xs-header">
-        <a class="xs-header-back" ng-click="showAddr = !showAddr"><span></span>返回</a>
-
-        <div class="xs-header-title flex">
-            <span class="header-rst-name">选择地址</span>
+            <p class="class-margin" ng-if="!tel">请绑定手机</p>
         </div>
-    </header>
-    <div>
-        <ul class="delivery-list">
-            <li class="dlist-item" ng-repeat="addrItem in address">
-                <div class="dlist-item-content" ng-click="selectAddr(addrItem)">
-                    <p class="clear-margin" ng-bind="addrItem.name"></p>
+        <span class='ui-enter ui-gt'>&gt;</span>
+    </section>
+    <section class='ui-padding-block delivery-block' ng-click="showAddr = !showAddr">
+        <div>
+            <p class="clear-margin" ng-if="crtAddress">
+                <span>默认取餐点：</span><br/>
+                <span ng-show="crtAddress.name" ng-bind="crtAddress.name"></span><br/>
+                <span ng-bind="crtAddress.address"></span>
+            </p>
 
-                    <p class="clear-margin" ng-bind="addrItem.address"></p>
+            <p class="class-margin" ng-if="!crtAddress">请设置默认取餐点</p>
+        </div>
+        <span class='ui-enter ui-gt'>&gt;</span>
+    </section>
+    <div class="slide-block" ng-class="{ 'ui-slide-in':showAddr }">
+        <header class="xs-header">
+            <a class="xs-header-back" ng-click="showAddr = !showAddr"><span></span>返回</a>
+
+            <div class="xs-header-title flex">
+                <span class="header-rst-name">选择地址</span>
+            </div>
+        </header>
+        <div>
+            <ul class="delivery-list">
+                <li class="dlist-item" ng-repeat="addrItem in address">
+                    <div class="dlist-item-content" ng-click="selectAddr(addrItem)">
+                        <p class="clear-margin" ng-bind="addrItem.name"></p>
+
+                        <p class="clear-margin" ng-bind="addrItem.address"></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide-block" ng-class="{ 'ui-slide-in':showTel }">
+        <header class="xs-header">
+            <a class="xs-header-back" ng-click="showTel = !showTel"><span></span>返回</a>
+
+            <div class="xs-header-title flex">
+                <span class="header-rst-name">手机绑定</span>
+            </div>
+        </header>
+        <div class="ui-flashbar error" ng-show="error" ng-bind="error.message"></div>
+        <form class="logreg-form" name="regform" novalidate ng-submit="updateTel()">
+            <div class="logreg-inputs">
+                <div class="input-group"
+                     ng-class="{'ui_error': regform.mobile.$invalid &amp;&amp; regform.mobile.$dirty}">
+                    <input type="tel" class="ui-input" placeholder="" name="mobile" ng-model="user.mobile"
+                           ng-pattern="/^1[3-9]\d{9}$/" required/>
+
+                    <p class="input-tip">
+                        <span ng-if="regform.mobile.$error.required">请填写手机号码</span>
+                        <span ng-if="regform.mobile.$error.pattern">手机号码格式非法</span>
+                    </p>
                 </div>
-            </li>
-        </ul>
+                <div class="input-group input-group-msgcode">
+                    <div class="input-group-msgcode-inner">
+                        <input type="text" class="ui-input" name="code" ng-model="user.code" ng-pattern="/^\d{6}$/" required
+                               placeholder="请输入验证码">
+                        <button class="ui-btn" type="button" ng-disabled="countdown || regform.mobile.$invalid"
+                                ng-click="sendCode()" disabled="disabled">
+                            <span ng-bind="countdown ? '重发验证码' : '发送验证码'">发送验证码</span>
+                            <countdown class="ui-parenthese countdown_number ng-hide" time="60" ng-show="countdown"></countdown>
+                        </button>
+                    </div>
+                    <p class="input-tip">
+                        <span ng-if="regform.code.$error.required">请输入验证码</span>
+                        <span ng-if="regform.code.$error.pattern">验证码格式错误</span>
+                    </p>
+                </div>
+                <button type="submit" class="ui-btn logreg-btn" ng-disabled="regform.$invalid"
+                        disabled="disabled">绑定
+                </button>
+            </div>
+        </form>
     </div>
 </div>

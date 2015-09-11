@@ -12,7 +12,7 @@
         <p class="torder-status-tip" ng-bind="status.description"></p>
     </div>
     <div class="trade-btn-block" ng-if="!wxPay">
-        <a class="ui-btn ui-main-btn" ng-href="#/index.html">继续点餐</a>
+        <a class="ui-btn ui-main-btn" ng-click="toContinueOrder()" style="color:#fff;">继续点餐</a>
     </div>
     <div class="trade-btn-block" ng-if="wxPay">
         <a class="ui-btn ui-main-btn" ng-click="toPay()" style="color:#fff">去支付</a>
@@ -23,7 +23,7 @@
         合计
         <span class="tblock-title-helper">
         <span class="ui-multiple" ng-bind="foodQuantity()"></span>
-        <strong class="ui-rmb torder-cost" ng-bind="order.total"></strong>
+        <strong class="ui-rmb torder-cost" ng-bind="total"></strong>
         </span>
     </h3>
 
